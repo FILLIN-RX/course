@@ -3,5 +3,55 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": []
+    "configurations": [
+        {
+            "name": "(gdb) Attach",
+            "type": "cppdbg",
+            "request": "attach",
+            "program": "${workspaceFolder}/build/appcourse.exe",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/path/to/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+            "visualizerFile": "c:\\Users\\Fillin\\AppData\\Roaming\\Code\\User\\workspaceStorage\\34bce8add253738616522d9cf4f56739\\tonka3000.qtvsctools\\qt.natvis.xml"
+        },
+        {
+            "name": "(gdb) Bash on Windows Attach",
+            "type": "cppdbg",
+            "request": "attach",
+            "program": "${workspaceFolder}/build/appcourse.exe",
+            "processId": "${command:pickRemoteProcess}",
+            "pipeTransport": {
+                "debuggerPath": "/usr/bin/gdb",
+                "pipeProgram": "${env:windir}\\system32\\bash.exe",
+                "pipeArgs": [
+                    "-c"
+                ],
+                "pipeCwd": ""
+            },
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+            "visualizerFile": "c:\\Users\\Fillin\\AppData\\Roaming\\Code\\User\\workspaceStorage\\34bce8add253738616522d9cf4f56739\\tonka3000.qtvsctools\\qt.natvis.xml"
+        }
+    ]
 }

@@ -3,10 +3,11 @@ import QtQuick.Window
 import QtQuick.Controls
 
 Window {
+    id: root
     width: 360
     height: 640
     visible: true
-    title: "Login/Register"
+    title: "Gestion Académique"
 
     StackView {
         id: stack
@@ -14,29 +15,39 @@ Window {
         initialItem: loginPage
     }
 
+    /* ===== LOGIN ===== */
     Component {
         id: loginPage
         Login {
-            onLoginSuccess: {  // Signal name matches Login.qml
+            onLoginSuccess: {
                 console.log("Logged in!")
-                // tu peux push la page principale après login
+                stack.replace(mainPage)   // 👉 remplace login par l'app principale
             }
-            onGoToRegister: {  // Signal name matches Login.qml
-                stack.push(registerPage)  // passe à l'écran d'inscription
+
+            onGoToRegister: {
+                stack.push(registerPage)
             }
         }
     }
 
+    /* ===== REGISTER ===== */
     Component {
         id: registerPage
         Register {
             onRegisterSuccess: {
                 console.log("Registered!")
-                stack.pop()  // retourne au login
+                stack.pop()   // retour login
             }
-            onGoToLogin: {  // Need this signal in Register.qml
+
+            onGoToLogin: {
                 stack.pop()
             }
         }
+    }
+
+    /* ===== MAIN APP ===== */
+    Component {
+        id: mainPage
+        MainPage { }
     }
 }
