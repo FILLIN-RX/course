@@ -3,222 +3,217 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 Item {
+    id: registerPage
     width: parent.width
-    height: 940  // Fixed: Changed from 94 to 940
+    height: 940
+
+    // Signaux pour communiquer avec le fichier Main.qml
     signal registerSuccess()
-    signal goToLogin()  // Added missing signal
+    signal goToLogin()
+
+    // Le bloc Connections permet de réagir aux signaux envoyés par le C++ (AuthController)
+    Connections {
+        target: authService // C'est l'objet exposé dans le main.cpp
+
+        // Cette fonction s'exécute quand le C++ émet 'registrationSuccess'
+        function onRegistrationSuccess() {
+            console.log("Succès : Utilisateur enregistré dans SQLite")
+            registerPage.registerSuccess() // On informe le parent (Main.qml)
+        }
+
+        // Cette fonction s'exécute en cas d'erreur SQL
+        function onRegistrationError(message) {
+            console.log("Erreur reçue du C++ : " + message)
+            errorText.text = "Erreur : " + message
+            errorText.visible = true
+        }
+    }
 
     Rectangle {
         anchors.fill: parent
-        color: "#D4E8E6"
+        color: "#D4E8E6" // Couleur de fond bleutée
 
         Rectangle {
             width: 550
-            height: 560
+            height: 800 // Augmenté pour accueillir les nouveaux champs
             radius: 16
             color: "white"
             anchors.centerIn: parent
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 50
-                spacing: 16
-
-                // Logo - Fixed: Use placeholder
-                Rectangle {
-                    width: 56
-                    height: 56
-                    radius: 8
-                    color: "#7C2AE8"
-                    Layout.alignment: Qt.AlignHCenter
-                    Layout.bottomMargin: 4
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "Logo"
-                        color: "white"
-                        font.pixelSize: 12
-                    }
-                }
+                anchors.margins: 40
+                spacing: 12
 
                 Text {
-                    text: "Registration"
+                    text: "Inscription"
                     font.pixelSize: 24
                     font.weight: Font.DemiBold
                     Layout.alignment: Qt.AlignHCenter
-                    Layout.bottomMargin: 12
                 }
 
-                // Name
-                ColumnLayout {
-                    spacing: 8
+                // --- Message d'erreur ---
+                Text {
+                    id: errorText
+                    visible: false
+                    color: "red"
+                    font.pixelSize: 12
                     Layout.fillWidth: true
+                    wrapMode: Text.WordWrap
+                }
 
-                    Text {
-                        text: "Nom"
-                        font.pixelSize: 14
-                        font.weight: Font.Medium
-                        color: "#1A1A1A"
-                    }
-
-                    Rectangle {
+                // --- CHAMP NOM ---
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Text { text: "Nom"; font.pixelSize: 12; color: "gray" }
+                    TextField {
+                        id: nameField
+                        placeholderText: "Votre nom"
                         Layout.fillWidth: true
-                        height: 48
-                        color: "#F5F5F5"
-                        radius: 8
-                        border.width: 1
-                        border.color: "#E0E0E0"
+                    }
+                }
 
-                        RowLayout {
-                            anchors.fill: parent
-                            anchors.leftMargin: 16
-                            anchors.rightMargin: 16
-                            spacing: 10
+                // --- CHAMP PRÉNOM ---
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Text { text: "Prénom"; font.pixelSize: 12; color: "gray" }
+                    TextField {
+                        id: firstNameField
+                        placeholderText: "Votre prénom"
+                        Layout.fillWidth: true
+                    }
+                }
 
-                            TextField {
-                                id: nameField
-                                Layout.fillWidth: true
-                                font.pixelSize: 14
-                                placeholderText: "Enter your name"
-                                verticalAlignment: Text.AlignVCenter
-                            }
+                // --- CHAMP EMAIL ---
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Text { text: "Email"; font.pixelSize: 12; color: "gray" }
+                    TextField {
+                        id: emailField
+                        placeholderText: "email@exemple.com"
+                        Layout.fillWidth: true
+                    }
+                }
 
-                            Text {
-                                text: "👤"
-                                font.pixelSize: 20
-                                color: "#666666"
-                            }
+                // --- CHAMP MOT DE PASSE ---
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Text { text: "Mot de passe"; font.pixelSize: 12; color: "gray" }
+                    TextField {
+                        id: passwordField
+                        placeholderText: "Saisissez un mot de passe"
+                        echoMode: TextInput.Password
+                        Layout.fillWidth: true
+                    }
+                }
+
+                // --- CHAMP TÉLÉPHONE ---
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Text { text: "Téléphone"; font.pixelSize: 12; color: "gray" }
+                    TextField {
+                        id: phoneField
+                        placeholderText: "0123456789"
+                        inputMethodHints: Qt.ImhDigitsOnly
+                        Layout.fillWidth: true
+                    }
+                }
+
+                // --- CHAMP RÔLE ---
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Text { text: "Rôle"; font.pixelSize: 12; color: "gray" }
+                    ComboBox {
+                        id: roleComboBox
+                        Layout.fillWidth: true
+                        model: ["etudiant", "enseignant", "chef_departement", "admin"]
+                        currentIndex: 0
+
+                        // Style personnalisé pour le ComboBox
+                        background: Rectangle {
+                            border.color: "#cccccc"
+                            border.width: 1
+                            radius: 4
+                        }
+
+                        // Permet de voir le texte sélectionné
+                        contentItem: Text {
+                            text: roleComboBox.displayText
+                            color: "black"
+                            verticalAlignment: Text.AlignVCenter
+                            leftPadding: 10
                         }
                     }
                 }
 
-                // Email
+                // --- CHAMP TYPE ---
                 ColumnLayout {
-                    spacing: 8
                     Layout.fillWidth: true
-
-                    Text {
-                        text: "Email"
-                        font.pixelSize: 14
-                        font.weight: Font.Medium
-                        color: "#1A1A1A"
-                    }
-
-                    Rectangle {
+                    Text { text: "Type"; font.pixelSize: 12; color: "gray" }
+                    TextField {
+                        id: typeField
+                        placeholderText: "standard, premium, etc."
                         Layout.fillWidth: true
-                        height: 48
-                        color: "#F5F5F5"
-                        radius: 8
-                        border.width: 1
-                        border.color: "#E0E0E0"
-
-                        RowLayout {
-                            anchors.fill: parent
-                            anchors.leftMargin: 16
-                            anchors.rightMargin: 16
-                            spacing: 10
-
-                            TextField {
-                                id: emailField
-                                Layout.fillWidth: true
-                                font.pixelSize: 14
-                                placeholderText: "Enter your email"
-                                verticalAlignment: Text.AlignVCenter
-                            }
-
-                            Text {
-                                text: "✉"
-                                font.pixelSize: 20
-                                color: "#666666"
-                            }
-                        }
                     }
                 }
 
-                // Password
-                ColumnLayout {
-                    spacing: 8
-                    Layout.fillWidth: true
-
-                    Text {
-                        text: "Mot de passe"
-                        font.pixelSize: 14
-                        font.weight: Font.Medium
-                        color: "#1A1A1A"
-                    }
-
-                    Rectangle {
-                        Layout.fillWidth: true
-                        height: 48
-                        color: "#F5F5F5"
-                        radius: 8
-                        border.width: 1
-                        border.color: "#E0E0E0"
-
-                        RowLayout {
-                            anchors.fill: parent
-                            anchors.leftMargin: 16
-                            anchors.rightMargin: 16
-                            spacing: 10
-
-                            TextField {
-                                id: passwordField
-                                Layout.fillWidth: true
-                                font.pixelSize: 14
-                                placeholderText: "Enter your password"
-                                echoMode: TextInput.Password
-                                verticalAlignment: Text.AlignVCenter
-                            }
-
-                            Text {
-                                text: "🔒"
-                                font.pixelSize: 20
-                                color: "#666666"
-                            }
-                        }
-                    }
-                }
-
-                // Spacer
+                // --- BOUTON DE VALIDATION ---
                 Item {
-                    Layout.fillHeight: true
-                    Layout.minimumHeight: 10
-                }
-
-                // Sign Up Button - FIXED: Simplified
-                Button {
-                    text: "Sign up"
                     Layout.fillWidth: true
-                    height: 48
-
-                    // Material-compatible styling
-                    palette.button: "#7C2AE8"
-                    palette.buttonText: "white"
-
-                    onClicked: {
-                        console.log("Registration attempt:", nameField.text, emailField.text)
-                        registerSuccess()  // Emit signal
-                    }
-                }
-
-                // Sign in text
-                RowLayout {
-                    Layout.alignment: Qt.AlignHCenter
-                    Layout.topMargin: 8
-                    spacing: 4
-
-                    Text {
-                        text: "deja un compte?"
-                        font.pixelSize: 13
-                        color: "#666666"
-                    }
+                    Layout.preferredHeight: 50
 
                     Button {
-                        text: "Sign in"
-                        font.pixelSize: 13
-                        font.weight: Font.Bold
-                        flat: true  // Makes it look like text
-                        onClicked: goToLogin()  // Emit signal
+                        id: registerButton
+                        text: "Créer le compte"
+                        width: parent.width
+                        height: parent.height
+
+                        onClicked: {
+                            errorText.visible = false
+
+                            // Validation basique
+                            if (!nameField.text || !firstNameField.text || !emailField.text ||
+                                !passwordField.text) {
+                                errorText.text = "Veuillez remplir tous les champs obligatoires"
+                                errorText.visible = true
+                                return
+                            }
+
+                            // On appelle la fonction C++ avec TOUS les paramètres
+                            authService.registerUser(
+                                nameField.text,
+                                firstNameField.text,
+                                emailField.text,
+                                passwordField.text,
+                                phoneField.text,      // Téléphone
+                                roleComboBox.currentText, // Rôle sélectionné
+                                typeField.text       // Type
+                            )
+                        }
+                    }
+                }
+
+                // Lien vers la connexion
+                Item {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 40
+
+                    Row {
+                        anchors.centerIn: parent
+                        spacing: 5
+
+                        Text {
+                            text: "Déjà un compte ?";
+                            color: "#666666"
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        Button {
+                            text: "Se connecter"
+                            flat: true
+                            anchors.verticalCenter: parent.verticalCenter
+                            onClicked: registerPage.goToLogin()
+                        }
                     }
                 }
             }
